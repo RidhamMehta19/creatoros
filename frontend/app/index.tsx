@@ -6,10 +6,29 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+const TIMEOUT_MS = 10000;
+
+const fetchWithTimeout = async (url: string, options: any = {}) => {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    return response;
+  } catch (error) {
+    clearTimeout(timeout);
+    throw error;
+  }
+};
 
 export default function OnboardingScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     name: '',
@@ -52,20 +71,26 @@ export default function OnboardingScreen() {
     }
 
     setLoading(true);
+    setError('');
+    
     try {
-      const response = await fetch(`${BACKEND_URL}/api/users`, {
+      const response = await fetchWithTimeout(`${BACKEND_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
+      if (!response.ok) {
+        throw new Error('Failed to create profile');
+      }
+
       const user = await response.json();
       await AsyncStorage.setItem('userId', user.id);
       await AsyncStorage.setItem('userName', user.name);
       router.replace('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating user:', error);
-      alert('Failed to create profile. Please try again.');
+      setError('Network error. Please check connection and try again.');
       setLoading(false);
     }
   };
@@ -74,6 +99,7 @@ export default function OnboardingScreen() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#6366f1" />
+        <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
   }
@@ -81,6 +107,15 @@ export default function OnboardingScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        {error ? (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity onPress={() => setError('')}>
+              <Ionicons name="close" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
         <View style={styles.header}>
           <Text style={styles.title}>Creator OS</Text>
           <Text style={styles.subtitle}>Your personal content manager</Text>
@@ -197,9 +232,9 @@ export default function OnboardingScreen() {
               <TouchableOpacity 
                 style={styles.button} 
                 onPress={handleComplete}
-                disabled={formData.platforms.length === 0}
+                disabled={formData.platforms.length === 0 || loading}
               >
-                <Text style={styles.buttonText}>Get Started</Text>
+                <Text style={styles.buttonText}>{loading ? 'Saving...' : 'Get Started'}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -219,6 +254,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#0f172a',
+  },
+  loadingText: {
+    color: '#ffffff',
+    marginTop: 16,
+    fontSize: 16,
+  },
+  errorBanner: {
+    backgroundColor: '#ef4444',
+    padding: 12,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#ffffff',
+    fontSize: 14,
+    flex: 1,
   },
   scrollContent: {
     padding: 24,
