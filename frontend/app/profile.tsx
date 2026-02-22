@@ -127,19 +127,28 @@ export default function ProfileScreen() {
 
         {/* Actions */}
         <View style={styles.actionsSection}>
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => alert('Settings coming soon! This will let you edit your profile and preferences.')}
+          >
             <Ionicons name="settings-outline" size={24} color="#94a3b8" />
             <Text style={styles.actionText}>Settings</Text>
             <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => alert('Need help? Email: support@creatoronos.com\n\nOr join our community for tips and tricks!')}
+          >
             <Ionicons name="help-circle-outline" size={24} color="#94a3b8" />
             <Text style={styles.actionText}>Help & Support</Text>
             <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionItem}>
+          <TouchableOpacity 
+            style={styles.actionItem}
+            onPress={() => alert('Creator OS v1.0.0\n\nYour AI-powered content manager\n\nBuilt with ❤️ for creators')}
+          >
             <Ionicons name="information-circle-outline" size={24} color="#94a3b8" />
             <Text style={styles.actionText}>About</Text>
             <Ionicons name="chevron-forward" size={20} color="#94a3b8" />
