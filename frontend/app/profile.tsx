@@ -111,11 +111,15 @@ export default function ProfileScreen() {
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Platforms</Text>
               <View style={styles.platformTags}>
-                {profile?.platforms.map((platform) => (
-                  <View key={platform} style={styles.platformTag}>
-                    <Text style={styles.platformTagText}>{platform}</Text>
-                  </View>
-                ))}
+                {profile?.platforms && profile.platforms.length > 0 ? (
+                  profile.platforms.map((platform) => (
+                    <View key={platform} style={styles.platformTag}>
+                      <Text style={styles.platformTagText}>{platform}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={styles.infoValue}>No platforms selected</Text>
+                )}
               </View>
             </View>
           </View>
