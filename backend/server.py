@@ -139,7 +139,7 @@ Format your response as JSON with these keys:
             api_key=EMERGENT_LLM_KEY,
             session_id=f"content_gen_{user.id}_{datetime.utcnow().timestamp()}",
             system_message=system_message
-        ).with_model("openai", "gpt-5.2")
+        ).with_model("openai", "gpt-5-mini")
         
         # Generate content
         message = UserMessage(text=user_prompt)
