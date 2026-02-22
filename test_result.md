@@ -149,6 +149,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "Tested POST /api/content/generate - LLM integration working perfectly. GPT-5.2 generates personalized content based on user profile. Returns proper hooks (3), detailed scripts (1500+ chars), and platform-optimized captions with hashtags. Content is contextually relevant to user niche and target audience."
+      - working: true
+        agent: "testing"
+        comment: "GPT-5-mini model switch verification SUCCESSFUL - Tested both POST /api/users (user creation) and POST /api/content/generate (GPT-5-mini content generation). Model switch completed without breaking changes. GPT-5-mini generates quality content: 3 hooks, 2578 char script, 452 char caption with proper JSON structure. No functionality degradation detected."
 
   - task: "Content history API"
     implemented: true
